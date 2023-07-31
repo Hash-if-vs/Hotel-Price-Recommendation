@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Price Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            text-align: center;
+            margin-top: 50px;
+        }
+        h1 {
+            color: #336699;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+        #submitBtn {
+            padding: 10px 20px;
+            background-color: #336699;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #submitBtn:hover {
+            background-color: #275577;
+        }
+        #scrapingStatus {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #336699;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#submitBtn").click(function() {
+                $("#scrapingStatus").text("Data collection in progress...");
+                $("form").submit();
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Price Recommendation System</h1>
+    <form action="/dashboard" method="POST">
+        <label for="location">Enter the city name:</label>
+        <input type="text" id="location" name="location" required>
+        <button type="submit" id="submitBtn">Get Data</button>
+    </form>
+    <p id="scrapingStatus"></p>
+</body>
+</html>

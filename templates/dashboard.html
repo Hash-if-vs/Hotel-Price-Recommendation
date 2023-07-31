@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            text-align: center;
+            margin-top: 50px;
+        }
+        h1 {
+            color: #336699;
+        }
+        h2 {
+            color: #336699;
+        }
+        h3 {
+            color: #336699;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+        input[type="text"], button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        #priceRecommendForm button {
+            background-color: #336699;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #priceRecommendForm button:hover {
+            background-color: #275577;
+        }
+        #priceRecommendationResult {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #336699;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to make the AJAX request to the price_recommend route
+            $("#priceRecommendForm").submit(function(event) {
+                event.preventDefault(); // Prevent form submission
+                $.ajax({
+                    url: '/predict',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $("#priceRecommendationResult").html("Recommended Price: " + response.predicted_price);
+                    },
+                    error: function(error) {
+                        console.log('Error occurred during price recommendation');
+                    }
+                });
+            });
+
+            // Function to filter the options in the datalist based on user input
+            function filterOptions(inputElement, dataListElement) {
+                var inputValue = inputElement.value.toLowerCase();
+                var options = dataListElement.options;
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value.toLowerCase().startsWith(inputValue)) {
+                        options[i].hidden = false;
+                    } else {
+                        options[i].hidden = true;
+                    }
+                }
+            }
+
+            // Event listener to filter location options as the user types
+            $("#inputLocation").on("input", function() {
+                filterOptions(this, document.getElementById("locationList"));
+            });
+
+            // Event listener to filter room type options as the user types
+            $("#inputRoomType").on("input", function() {
+                filterOptions(this, document.getElementById("roomTypeList"));
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Dashboard </h1>
+    <h2>Location: {{ location }}</h2>
+    <h3>Statistics:</h3>
+    <p>Total Rows: {{ statistics.total_rows }}</p>
+    <p>Average Price: {{ statistics.average_price }}</p>
+    <p>Minimum Price: {{ statistics.min_price }}</p>
+    <p>Maximum Price: {{ statistics.max_price }}</p>
+    <!-- Add more statistics as needed -->
+
+    <h3>Get Price Recommendations:</h3>
+    <form id="priceRecommendForm">
+        <label for="inputLocation">Location:</label>
+        <input type="text" id="inputLocation" name="location" list="locationList" autocomplete="off">
+
+        <label for="inputRoomType">Room Type:</label>
+        <input type="text" id="inputRoomType" name="room_type" list="roomTypeList" autocomplete="off">
+
+        <label for="inputAmenities">Amenities:</label>
+        <input type="text" id="inputAmenities" name="amenities">
+
+        <button type="submit">Get Price Recommendations</button>
+    </form>
+
+    <div id="priceRecommendationResult">
+        <!-- Price recommendation results will be displayed here -->
+    </div>
+
+    <datalist id="locationList">
+        {% for loc in locations %}
+        <option value="{{ loc }}">
+        {% endfor %}
+    </datalist>
+
+    <datalist id="roomTypeList">
+        {% for rt in room_types %}
+        <option value="{{ rt }}">
+        {% endfor %}
+    </datalist>
+</body>
+</html>

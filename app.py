@@ -31,9 +31,8 @@ def custom_tokenizer(text):
 nltk.download('stopwords')
 stopwords_list = set(stopwords.words('english'))
 vectorizer = TfidfVectorizer(tokenizer=custom_tokenizer,ngram_range=(1, 2),stop_words=stopwords_list)
-# Standardize the features
 scaler = StandardScaler()
-pca = PCA(n_components=2)  # Set the number of components you want to retain
+pca = PCA(n_components=2)  
 
 current_date = datetime.now().strftime("%Y-%m-%d")
 data_folder_path = os.path.join(os.getcwd(), "data")
@@ -48,7 +47,6 @@ def home():
 
 @app.route('/check_scraping_status', methods=['GET'])
 def check_scraping_status():
-    # Check the current status of the scraping process
     return jsonify({'status': session.get('scraping_status', 'not_started')})
 
 @app.route('/dashboard', methods=['POST'])
@@ -93,9 +91,7 @@ def pretrain():
        df[feature] = label_encoder.fit_transform(df[feature].str.lower())
        label_encoders[feature] = label_encoder
        joblib.dump(label_encoders[feature], f'{feature}_encoder.joblib')
-    # Assigning the classes to the label encoders
-    location_encoder = joblib.load('location_encoder.joblib')
-    room_type_encoder = joblib.load('type_encoder.joblib')
+
 
     df_processed = pd.concat([df, amenities_df], axis=1)
     df_processed.drop(columns=['amenities','distance'], axis=1, inplace=True)
@@ -138,7 +134,7 @@ def predict():
         model=load_model('saved_model')
         user_location = request.form['location'].lower()
         user_room_type = request.form['room_type'].lower()
-        user_amenities = request.form['amenities']
+        user_amenities = request.form['amenities'].replace(r",","")
 
         # Load the label encoders for location and room type
         location_encoder = joblib.load('location_encoder.joblib')
@@ -168,7 +164,7 @@ def predict():
         predictions = predict_model(model, data=user_pca_df)
         predicted_price = predictions['prediction_label'].iloc[0]
         print(f"Predicted price for the given input: {predicted_price}")
-        return jsonify({'predicted_price': predicted_price})
+        return jsonify({'predicted_price': round(predicted_price,3)})
 
 
 if __name__ == '__main__':

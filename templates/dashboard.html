@@ -49,6 +49,27 @@
             color: #336699;
         }
     </style>
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script>
+         $(document).ready(function() {
+             // Function to make the AJAX request to the preprocess route
+             function preprocessData() {
+                 $.ajax({
+                     url: '/pretrain',
+                     type: 'POST',
+                     success: function(response) {
+                         console.log('Preprocessing completed');
+                     },
+                     error: function(error) {
+                         console.log('Error occurred during preprocessing');
+                     }
+                 });
+             }
+ 
+             // Call the preprocessData function after the dashboard statistics are displayed
+             preprocessData();
+         });
+     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -90,6 +111,7 @@
             $("#inputRoomType").on("input", function() {
                 filterOptions(this, document.getElementById("roomTypeList"));
             });
+            
         });
     </script>
 </head>
